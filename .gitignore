@@ -4,3 +4,4 @@ src_from whitefish/
 writing/
 bin_from whitefish/
 data/
+.Rproj.user*
