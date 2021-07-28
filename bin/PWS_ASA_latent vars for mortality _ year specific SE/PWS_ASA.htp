@@ -1,0 +1,322 @@
+#if !defined(_PWS_ASA_)
+#  define _PWS_ASA_
+
+class model_data : public ad_comm{
+  int DD_Mat;
+  int b_simulation_flag;
+  int rseed;
+  int no_estimation;
+  int pin_write;
+  data_int nrow;
+  int nyr;
+  data_int nyr_tobefit;
+  data_int ncol;
+  int nage;
+  dvector ages;
+  data_matrix w_a_a;
+  data_matrix fecun;
+  data_matrix pc;
+  data_number pk;
+  data_matrix fbc;
+  data_matrix gc;
+  data_vector sc;
+  data_vector f_sp;
+  data_vector mdm;
+  data_vector egg;
+  data_vector cv_egg;
+  data_number hydADFG_start;
+  data_vector hydADFG;
+  data_number hydPWSSC_start;
+  data_vector hydPWSSC;
+  data_vector cv_hydPWSSC;
+  data_matrix seine;
+  data_matrix spac;
+  data_int mat_mod_type;
+  data_matrix maturity_data;
+  data_int ESS_est;
+  data_int ph_Z_0_8;
+  data_int ph_Z_9;
+  data_int ph_Z_0_8offset;
+  data_int ph_Z_9offset;
+  data_int ph_matur_age3_per1;
+  data_int ph_matur_age4_per1;
+  data_int ph_matur_age3_per2;
+  data_int ph_matur_age4_per2;
+  data_int ph_alpha_v;
+  data_int ph_beta_v;
+  data_int ph_age0devs;
+  data_int ph_init_pop;
+  data_int ph_eggAdd;
+  data_int ph_mdm;
+  data_int ph_mdmAdd;
+  data_int ph_hyd1;
+  data_int ph_hydAdd1;
+  data_int ph_hyd2;
+  data_int ph_hydAdd2;
+  data_int ph_age3_4mort_93;
+  data_int ph_age5_8mort_93;
+  data_int ph_meanage0;
+  data_int ph_meanage0_offset;
+  data_int ph_sigmaage0;
+  data_int ph_betaage0;
+  data_int ph_betamortality;
+  data_int ph_mortdevs;
+  data_int ph_age0_offset;
+  data_int ph_mortality_offset;
+  data_int ph_mat_mod_2;
+  data_int ph_mat_mod_3;
+  data_int ph_sigma_mortdevs;
+  data_int ph_sigma_age0covar;
+  data_int ph_sigma_morcovar;
+  data_vector ESS_Se;
+  data_vector ESS_Sp;
+  data_int standardize_covariates;
+  data_int n_age0_covs;
+  data_ivector R_fixed_or_est;
+  data_ivector age0_turn_on;
+  data_matrix age0_covariates;
+  data_ivector R_change;
+  data_int n_mor_covs;
+  data_ivector M_fixed_or_est;
+  data_ivector mor_season;
+  data_ivector mor_turn_on;
+  data_matrix covariate_effect_byage;
+  data_matrix mor_covariates;
+  data_vector nyr_tobefit_winter_covariate;
+  data_ivector M_change;
+  data_int sim_catches;
+  data_int nyr_resample_period;
+  data_ivector resample_period;
+  data_vector exploitation_history;
+  data_int age0_dev_option;
+  data_int data_avg_option;
+  int turn_on_effort;
+  dmatrix gc_V;
+  dmatrix pc_V;
+  dmatrix fbc_V;
+  dvector sc_F;
+  data_matrix covariate_se;
+  data_matrix age0_cov_se;
+  double LB_Mat3_1;
+  double LB_Mat3_2;
+  double LB_Mat4_1;
+  double LB_Mat4_2;
+  double UB_Mat3_1;
+  double UB_Mat3_2;
+  double UB_Mat4_1;
+  double UB_Mat4_2;
+  int mor_cov_counter;
+  int M_cov_model;
+  int rec_cov_counter;
+  int rec_cov_counter_age0devs;
+  int R_cov_model;
+  double sigma_age0devs_PIN;
+  double Mat3_1_PIN;
+  double Mat3_2_PIN;
+  double Mat4_1_PIN;
+  double Mat4_2_PIN;
+  double sigma_mortdevs_PIN;
+  dvector sigma_age0covar_PIN;
+  dvector sigma_morcovar_PIN;
+  dvector beta_age0_PIN;
+  dvector beta_mortality_PIN;
+  dmatrix annual_age0devs_PIN;
+  dmatrix annual_mortdevs_PIN;
+  dvector beta_age0_offset_PIN;
+  dvector beta_mortality_offset_PIN;
+  dvector beta_mortality_ind;
+  dvector beta_recruit_ind;
+  ~model_data();
+  model_data(int argc,char * argv[]);
+  friend class model_parameters;
+};
+
+class model_parameters : public model_data ,
+  public function_minimizer
+{
+public:
+  ~model_parameters();
+  void preliminary_calculations(void);
+  void set_runtime(void);
+  virtual void * mycast(void) {return (void*)this;}
+  static int mc_phase(void)
+  {
+    return initial_params::mc_phase;
+  }
+  static int mceval_phase(void)
+  {
+    return initial_params::mceval_phase;
+  }
+  static int sd_phase(void)
+  {
+    return initial_params::sd_phase;
+  }
+  static int current_phase(void)
+  {
+    return initial_params::current_phase;
+  }
+  static int last_phase(void)
+  {
+    return (initial_params::current_phase
+      >=initial_params::max_number_phases);
+  }
+  static prevariable current_feval(void)
+  {
+    return *objective_function_value::pobjfun;
+  }
+private:
+  ivector integer_control_flags;
+  dvector double_control_flags;
+  param_init_bounded_number VHSV_age3_4_mort_93;
+  param_init_bounded_number ICH_age5_8_mort_93;
+  param_init_bounded_number Z_0_8;
+  param_init_bounded_number Z_9;
+  param_init_bounded_number Z_0_8offset;
+  param_init_bounded_number Z_9offset;
+  param_init_bounded_number matur_age3_per1;
+  param_init_bounded_number matur_age4_per1;
+  param_init_bounded_number matur_age3_per2;
+  param_init_bounded_number matur_age4_per2;
+  param_init_bounded_number alpha_maturity_prespawn;
+  param_init_bounded_number beta_maturity_prespawn;
+  param_init_bounded_number alpha_v;
+  param_init_bounded_number beta_v;
+  param_init_bounded_number survey_vul_alpha;
+  param_init_bounded_number survey_vul_beta;
+  param_init_bounded_vector loginit_pop;
+  param_init_bounded_number egg_add;
+  param_init_bounded_number logmdm_c;
+  param_init_bounded_number m_add;
+  param_init_bounded_number hydADFG_q;
+  param_init_bounded_number hydADFG_add;
+  param_init_bounded_number hydPWSSC_q;
+  param_init_bounded_number hydPWSSC_add;
+  param_init_bounded_matrix annual_age0devs;
+  param_init_bounded_number log_MeanAge0;
+  param_init_bounded_number Mean_Age0offset;
+  param_init_bounded_number sigma_age0devs;
+  param_init_bounded_vector beta_age0;
+  param_init_bounded_vector beta_mortality;
+  param_init_bounded_matrix annual_mortdevs;
+  param_init_bounded_number sigma_mortdevs;
+  param_init_bounded_vector beta_age0_offset;
+  param_init_bounded_vector beta_mortality_offset;
+  param_init_bounded_vector sigma_age0covar;
+  param_init_bounded_vector sigma_morcovar;
+  param_number S_0_2;
+  param_number S_3_8;
+  param_number S_9;
+  param_number mdm_c;
+  param_number MDMtemp_2;
+  param_number HtempADFG_num;
+  param_number not_below_this;
+  param_number penCount;
+  param_number Se_llk;
+  param_number Sp_llk;
+  param_number MDMllk;
+  param_number EGGllk;
+  param_number H_ADFGllk;
+  param_number H_PWSSCllk;
+  param_number age0_devs_penllk;
+  param_number mort_devs_penllk;
+  param_number age0_covar_prior;
+  param_number mort_covar_prior;
+  param_number beta_mort_prior;
+  param_number Z_prior;
+  param_number hydADFG_add_prior;
+  param_number hydPWSSC_add_prior;
+  param_number m_add_prior;
+  param_number mat_llk;
+  param_number tempMeanRec;
+  param_number meanRec;
+  param_number projected_PFRB;
+  param_vector init_age_0;
+  param_vector forecast_winter_effect;
+  param_vector forecast_Sur_winter;
+  param_vector age0_effect;
+  param_vector Vul;
+  param_vector Vul_survey;
+  param_vector CC_bot;
+  param_vector N_se;
+  param_vector SSB;
+  param_vector SB_star;
+  param_vector SB;
+  param_vector SpAC_bot;
+  param_vector SeBiomass;
+  param_vector Early_biomass;
+  param_vector MDM;
+  param_vector EGG;
+  param_vector EggAC_sum;
+  param_vector HYD_ADFG;
+  param_vector HYD_PWSSC;
+  param_vector MDMtemp_1;
+  param_vector EGGtemp;
+  param_vector HtempADFG_vec;
+  param_vector HtempPWSSC_vec;
+  param_vector Setemp_2;
+  param_vector Sptemp_2;
+  param_vector Setemp_3;
+  param_vector Sptemp_3;
+  param_vector Eg_SD;
+  param_vector PWSSC_SD;
+  param_vector MDMllk_ind;
+  param_vector EGGllk_ind;
+  param_vector H_ADFGllk_ind;
+  param_vector H_PWSSCllk_ind;
+  param_vector matllk_ind;
+  param_number forecast_age0_effect;
+  param_vector forecast_latent_mort_summer;
+  param_vector forecast_latent_mort_winter;
+  param_vector tempWgt;
+  param_vector avgWgt3Yr;
+  param_vector projected_N_y_a;
+  param_vector projected_Early_Sp_biomass;
+  param_vector Mean_Age0;
+  param_vector init_pop;
+  param_vector aggregate_annual_age0devs;
+  param_matrix summer_effect;
+  param_matrix winter_effect;
+  param_matrix Sur_summer;
+  param_matrix Sur_winter;
+  param_matrix Mat;
+  param_matrix N_mature;
+  param_matrix N_y_a;
+  param_matrix CC_top;
+  param_matrix SeAC;
+  param_matrix N_sp;
+  param_matrix Early_Sp_biomass;
+  param_matrix SPB;
+  param_matrix SpAC_top;
+  param_matrix SpAC;
+  param_matrix bio_a_a;
+  param_matrix EggAC;
+  param_matrix Early_bio_a_a;
+  param_matrix SeACR;
+  param_matrix SpACR;
+  param_matrix Setemp_1;
+  param_matrix Sptemp_1;
+  param_matrix annual_mortdevs_byage;
+  param_matrix Mat_unobs;
+  param_matrix Mat_prespawn;
+  param_number prior_function_value;
+  param_number likelihood_function_value;
+  objective_function_value f_llk;
+  param_stddev_number SSB_final_year;
+public:
+  virtual void userfunction(void);
+  virtual void report(const dvector& gradients);
+  virtual void final_calcs(void);
+  model_parameters(int sz,int argc, char * argv[]);
+  virtual void initializationfunction(void){}
+ void runSimulationModel(const int& rseed);
+ void calc_naturalmortality();
+ void calc_maturity();
+ void calc_selectivity();
+ void calc_statevariables();
+ void calc_surveyvalues();
+ void calc_nll_components();
+ void project_biomass(const int& rseed);
+  void write_chain_results(void);
+
+};
+#endif
